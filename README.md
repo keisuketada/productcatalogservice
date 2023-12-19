@@ -25,10 +25,11 @@ cargo run --bin server
 
 ### Dockerイメージの作成 & ECRへpush
 
+今回は東京リージョンとしています。
 AWSコンソールからECRにリポジトリを作成します。  
 <https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/repository-create.html>  
-
-リポジトリ作成後、Dockerイメージを作成しECRへpushします。  
+今回はリポジトリ名をproductcatalogserviceとしています。  
+リポジトリ作成後にDockerイメージを作成しECRへpushします。  
 
 ```shell
 # イメージ作成
@@ -36,6 +37,9 @@ docker build -t productcatalogservice .
 
 # タグ付けする
 docker tag productcatalogservice:latest <アカウント番号>.dkr.ecr.ap-northeast-1.amazonaws.com/productcatalogservice:latest
+
+# dockerクライアントの認証
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin <アカウント番号>.dkr.ecr.ap-northeast-1.amazonaws.com
 
 # push
 docker push <アカウント番号>.dkr.ecr.ap-northeast-1.amazonaws.com/productcatalogservice:latest
@@ -112,7 +116,7 @@ kubectl apply -f ./release/kubernetes-manifests.yaml
 
 ★は以下のように修正してください  
 
-- 修正前: gcr.io/google-samples/microservices-demo/productcatalogservice:v0.3.8
+- 修正前: gcr.io/google-samples/microservices-demo/productcatalogservice:<バージョン>
 - 修正後: <アカウント番号>.dkr.ecr.ap-northeast-1.amazonaws.com/productcatalogservice:latest
 
 使用後は以下で削除できます。  
